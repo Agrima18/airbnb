@@ -1,0 +1,142 @@
+<% layout("layout/boilerplate") -%>
+
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  integrity="sha512-+Eyf+javWBRjYr6nMMeU5KjkZVZGiChWVbr7cB7ZwvOQXEKP7zV8YYMmUK1nQ7GcV95AUP3rO9rMyXx0u95M1w=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+<!-- Spinner CSS -->
+<style>
+  .spin-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .spin-icon {
+    font-size: 120px;
+    color: crimson;
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .spinning {
+    transform: rotate(1440deg);
+  }
+
+  #spinBtn {
+    margin-top: 30px;
+    padding: 10px 25px;
+    font-size: 18px;
+    background-color: crimson;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  #rewardMessage {
+    margin-top: 20px;
+    font-size: 20px;
+    color: darkgreen;
+    font-weight: bold;
+  }
+
+  /* Close button */
+  #closeSpin {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  /* Fade-out animation */
+  .fade-out {
+    animation: fadeOut 0.5s ease forwards;
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.9);
+      pointer-events: none;
+    }
+  }
+</style>
+
+<!-- Spinner UI -->
+<div class="spin-wrapper">
+  <!-- ❌ Close Button -->
+  <button id="closeSpin" aria-label="Close spinner popup">&times;</button>
+
+  <!-- 🎯 Spinning Icon -->
+  <i id="spinIcon" class="fas fa-compact-disc spin-icon"></i>
+
+  <!-- 🔘 Spin Button -->
+  <button id="spinBtn">🎯 Spin to Win</button>
+
+  <!-- 🏆 Reward Message -->
+  <div id="rewardMessage"></div>
+</div>
+
+<!-- Spinner JavaScript -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const spinIcon = document.getElementById("spinIcon");
+    const spinBtn = document.getElementById("spinBtn");
+    const rewardMsg = document.getElementById("rewardMessage");
+    const closeBtn = document.getElementById("closeSpin");
+    const wrapper = document.querySelector(".spin-wrapper");
+
+    const prizes = [
+      "🎉 10% OFF",
+      "🎁 Free Hotel Upgrade",
+      "🪙 100 Coins",
+      "🌍 Destination Tip",
+      "😅 Nothing... Try Again",
+      "🏅 Extra Wander Badge"
+    ];
+
+    // 🔄 Spin action
+    if (spinBtn && spinIcon && rewardMsg) {
+      spinBtn.addEventListener("click", () => {
+        spinIcon.classList.add("spinning");
+        spinBtn.disabled = true;
+        rewardMsg.textContent = "";
+
+        setTimeout(() => {
+          const prize = prizes[Math.floor(Math.random() * prizes.length)];
+          rewardMsg.textContent = `You won: ${prize}`;
+          spinIcon.classList.remove("spinning");
+          spinBtn.disabled = false;
+        }, 4200);
+      });
+    }
+
+    // ❌ Close and fade out
+    if (closeBtn && wrapper) {
+      closeBtn.addEventListener("click", () => {
+        wrapper.classList.add("fade-out");
+        setTimeout(() => {
+          wrapper.style.display = "none";
+        }, 500);
+      });
+    }
+  });
+</script>

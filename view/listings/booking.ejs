@@ -1,0 +1,36 @@
+<% layout("/layout/boilerplate") -%>
+
+<div class="container mt-5">
+  <div class="card p-4 shadow rounded-4">
+
+    <!-- ✅ Flash messages -->
+    <% if (success) { %>
+      <div class="alert alert-success text-center"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert alert-danger text-center"><%= error %></div>
+    <% } %>
+
+    <h2 class="text-center mb-4">Booking Confirmed ✅</h2>
+
+    <h4>Listing: <%= booking.listing.title %></h4>
+    <p><strong>Location:</strong> <%= booking.listing.location %>, <%= booking.listing.country %></p>
+    <p><strong>Guest:</strong> <%= booking.guests %></p>
+    <p><strong>Dates:</strong> <%= booking.startDate.toDateString() %> to <%= booking.endDate.toDateString() %></p>
+    <p><strong>Total Price:</strong> ₹<%= booking.totalPrice.toFixed(2) %></p>
+
+    <!-- 💳 Pay Now Button -->
+    <form action="/payment/initiate" method="POST" class="mt-4">
+      <input type="hidden" name="bookingId" value="<%= booking._id %>">
+      <input type="hidden" name="amount" value="<%= booking.totalPrice %>">
+      <button class="btn btn-success px-5 py-2 me-3">💳 Pay Now</button>
+    </form>
+    
+
+    <!-- 🔙 Back to Listing Button -->
+     <div class="back row-1 col-3 offset-2">
+    <a href="/listings/<%= booking.listing.slug %>" class="btn btn-outline-primary px-4 py-2 mt-3">
+      ← Back to Listing
+    </a></div>
+  </div>
+</div>

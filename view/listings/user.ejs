@@ -1,0 +1,83 @@
+<% layout("/layout/boilerplate") -%>
+
+<div class="container py-5">
+  <div class="row">
+    <!-- LEFT COLUMN: Avatar & Info -->
+    <div class="col-md-4 text-center">
+      <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="rounded-circle mb-3" width="150" height="150" alt="Avatar">
+      <h3><%= user.username %></h3>
+      <p>@<%= user.handle %></p>
+      <p><strong>Role:</strong> <%= user.role || "Traveler" %></p>
+
+      <% if (currentUser && !currentUser._id.equals(user._id)) { %>
+        <form action="/user/<%= user.handle %>/follow" method="POST">
+          <button class="btn <%= isFollowing ? 'btn-outline-danger' : 'btn-crimson' %> w-100">
+            <%= isFollowing ? 'Unfollow' : 'Follow' %>
+          </button>
+        </form>
+      <% } %>
+
+      <div class="mt-4">
+        <strong>Followers:</strong> <%= user.followers.length %> | 
+        <strong>Following:</strong> <%= user.following.length %>
+      </div>
+
+      <div class="card shadow-sm mt-4 p-3">
+        <h5>Wishlist</h5>
+        <% if (user.wishlist.length > 0) { %>
+          <ul class="list-group list-group-flush">
+            <% user.wishlist.forEach(listing => { %>
+              <li class="list-group-item">
+                <a href="/listings/<%= listing.slug %>"><%= listing.title %></a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No wishlist items yet.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Hosted Listings & Plans -->
+    <div class="col-md-8">
+      <div class="card shadow-sm mb-4 p-3">
+        <h4>Hosted Listings</h4>
+        <% if (user.hostedListings.length > 0) { %>
+          <ul class="list-group list-group-flush">
+            <% user.hostedListings.forEach(listing => { %>
+              <li class="list-group-item">
+                <a href="/listings/<%= listing.slug %>"><%= listing.title %></a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No hosted listings yet.</p>
+        <% } %>
+      </div>
+
+      <div class="card shadow-sm p-3">
+        <h4>Planned Trips</h4>
+        <% if (user.plans && user.plans.length > 0) { %>
+          <% user.plans.forEach(plan => { %>
+            <div class="mb-3">
+              <strong><%= plan.title %></strong>
+              <p>
+                Dates: <%= plan.startDate ? new Date(plan.startDate).toDateString() : "N/A" %>
+                - <%= plan.endDate ? new Date(plan.endDate).toDateString() : "N/A" %>
+              </p>
+              <% if (plan.listings && plan.listings.length > 0) { %>
+                <ul>
+                  <% plan.listings.forEach(l => { %>
+                    <li><a href="/listings/<%= l.slug %>"><%= l.title %></a></li>
+                  <% }) %>
+                </ul>
+              <% } %>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No planned trips yet.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

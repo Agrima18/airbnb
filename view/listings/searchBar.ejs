@@ -1,0 +1,74 @@
+<!-- 🔍 Multi-section Search Bar -->
+<div class="d-flex justify-content-center my-3">
+  <form method="GET" action="/listings" class="d-flex align-items-center border border-2 rounded-pill px-3 shadow-sm bg-white gap-3" style="width: 90%; max-width: 800px;">
+    <!-- Destination -->
+    <div class="d-flex flex-column">
+      <label class="text-muted small mb-1">Where</label>
+      <input type="text" class="form-control border-0 p-0" name="destination" placeholder="Search destination..." style="min-width: 140px;" />
+    </div>
+    <div class="vr"></div>
+
+    <!-- Date -->
+<!-- 📅 Check-in & Check-out -->
+<div class="d-flex flex-column position-relative">
+  <label class="text-muted small fw-semibold mb-1" style="font-family: 'Merriweather', serif;">Check-in</label>
+  <input type="date" name="checkin" class="form-control border-0 bg-white" style="min-width: 130px;" />
+</div>
+<div class="vr"></div>
+<div class="d-flex flex-column position-relative">
+  <label class="text-muted small fw-semibold mb-1" style="font-family: 'Merriweather', serif;">Check-out</label>
+  <input type="date" name="checkout" class="form-control border-0 bg-white" style="min-width: 130px;" />
+</div>
+
+
+    <!-- Guests Dropdown -->
+    <div class="dropdown position-relative">
+      <label class="text-muted small mb-1">Who</label>
+      <button class="form-control border-0 p-0 bg-white text-start dropdown-toggle" type="button" id="guestDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 150px;">
+        Add guests
+      </button>
+      <ul class="dropdown-menu p-3 shadow" aria-labelledby="guestDropdown" style="min-width: 250px;">
+        <% const guests = ["adults", "children", "infants", "pets"]; const guestIcons = ["users", "child", "baby", "paw"]; %>
+        <% for (let i = 0; i < guests.length; i++) { const g = guests[i]; %>
+        <li class="d-flex justify-content-between align-items-center mb-2">
+          <span><i class="fas fa-<%= guestIcons[i] %>"></i> <%= g.charAt(0).toUpperCase() + g.slice(1) %></span>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adjustGuest('<%= g %>', -1)">−</button>
+            <span id="<%= g %>Count">0</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adjustGuest('<%= g %>', 1)">+</button>
+            <input type="hidden" name="<%= g %>" id="<%= g %>Input" value="0">
+          </div>
+        </li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Search Button -->
+    <button type="submit" class="btn rounded-circle d-flex align-items-center justify-content-center ms-3" style="background-color: crimson; color: white; width: 40px; height: 45px;">
+      <i class="fas fa-search"></i>
+    </button>
+  </form>
+</div>
+<!-- Flatpickr Core CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Flatpickr Theme (Crimson Custom) -->
+<style>
+  .flatpickr-calendar {
+    border: 2px solid crimson;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+  }
+  .flatpickr-day.selected,
+  .flatpickr-day.startRange,
+  .flatpickr-day.endRange,
+  .flatpickr-day:hover {
+    background-color: crimson !important;
+    color: white !important;
+    border-color: crimson !important;
+  }
+  .flatpickr-day.today {
+    border: 1px solid crimson !important;
+  }
+</style>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

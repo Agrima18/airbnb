@@ -1,0 +1,87 @@
+
+<div class="container mt-5">
+  <div class="row justify-content-center align-items-center">
+    
+    <!-- Login Form Section (Left) -->
+    <div class="col-md-6">
+      <!-- Curved Dotted Line + Plane Icon -->
+      <div class="text-center position-relative mb-4" style="width: 300px; margin: auto;">
+        <!-- SVG Curved Dotted Line -->
+        <svg width="300" height="100" viewBox="0 0 300 100">
+          <path d="M 20 80 Q 150 0 280 80"
+                stroke="gray"
+                stroke-dasharray="5,5"
+                fill="transparent"
+                stroke-width="2"/>
+        </svg>
+
+        <!-- Static Plane Icon at the end of path -->
+        <i class="bi bi-send plane-glow"
+           style="
+             position: absolute;
+             top: 35px;
+             left: 255px;
+             font-size: 5rem;
+             color: crimson;
+             transform: rotate(90deg);">
+        </i>
+      </div>
+
+      <!-- Login Form -->
+      <h1 class="text-center mb-4">Login</h1>
+      <form action="/listings/login" method="POST" style="max-width: 400px; margin: auto;">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" name="username" required class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group">
+            <input type="password" id="password" name="password" required class="form-control">
+            <button type="button" class="btn btn-dark" onclick="togglePassword()">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn w-25" style="background-color: crimson; color: white;">
+          Login
+        </button>
+      </form>
+
+      <p class="text-center mt-3">
+        Don't have an account? <a href="/listings/register">Register here</a>
+      </p>
+    </div>
+
+    <!-- Image Section (Right) -->
+    <div class="col-md-6 text-center">
+      <img 
+        src="https://thumbs.dreamstime.com/b/vector-illustration-famous-world-landmarks-travel-tourism-concept-flat-design-vector-illustration-famous-world-landmarks-334777912.jpg" 
+        alt="Wanderlust Image" 
+        class="img-fluid"
+        style="max-height: 500px;" />
+    </div>
+  </div>
+</div>
+
+<!-- Password Toggle Script -->
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const toggleButton = event.target;
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      toggleButton.textContent = "Hide";
+    } else {
+      passwordInput.type = "password";
+      toggleButton.textContent = "Show";
+    }
+  }
+</script>
+
+<!-- Optional Glow Style for Plane -->
+<style>
+  .plane-glow {
+    filter: drop-shadow(2px 2px 6px crimson);
+  }
+</style>

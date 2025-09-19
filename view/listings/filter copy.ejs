@@ -1,0 +1,71 @@
+<!-- 🔥 Trending Categories & Tax Toggle -->
+<div class="d-flex justify-content-between align-items-center mb-4 px-3 flex-wrap gap-1">
+  <!-- 🔘 Trending Filters -->
+  <div class="d-flex gap-4 flex-wrap px-3 py-2">
+    <% 
+      const trendings = ["Trending", "Farm House", "Mountain", "Beach", "House", "OMG", "Sports", "Experience", "Pool", "Historic", "Lake", "Nature", "City"]; 
+      const iconMap = {
+        "Trending": "fa-fire",
+        "Farm House": "fa-tractor",
+        "Mountain": "fa-mountain",
+        "Beach": "fa-umbrella-beach",
+        "House": "fa-house",
+        "OMG": "fa-bolt",
+        "Sports": "fa-futbol",
+        "Experience": "fa-star",
+        "Pool": "fa-person-swimming",
+        "Historic": "fa-landmark",
+        "Lake": "fa-water",
+        "Nature": "fa-tree",
+        "City": "fa-city"
+      }; 
+    %>
+    <% for (let t of trendings) { %>
+      <div class="text-center">
+        <a class="text-dark text-decoration-none" href="/listings?category=<%= t %><%= tax === 'on' ? '&tax=on' : '' %>">
+          <i class="fa-solid <%= iconMap[t] || 'fa-compass' %> fs-4"></i>
+          <p class="mb-0 small"><%= t %></p>
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- ✅ Tax Toggle Switch -->
+  <form method="GET" action="/listings" class="mb-0 me-3">
+    <div class="form-check form-switch d-flex align-items-center">
+      <input class="form-check-input me-2" type="checkbox" name="tax" id="taxSwitch" onchange="this.form.submit()" <%= tax === 'on' ? 'checked' : '' %> />
+      <label class="form-check-label" for="taxSwitch">Tax</label>
+    </div>
+  </form>
+</div>
+
+<!-- ➕ Enquiry Button -->
+<button class="btn btn-success rounded-circle position-fixed bottom-0 end-0 m-4 shadow"
+        onclick="toggleEnquiryForm()" style="width: 60px; height: 60px; z-index: 1050;">
+  <i class="fa-solid fa-plus fs-4"></i>
+</button>
+
+<!-- 📝 Enquiry Form -->
+<div id="enquiryForm" class="position-fixed bottom-0 end-0 m-4 p-4 bg-white border rounded shadow"
+     style="width: 320px; display: none; z-index: 1040;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Enquiry</h5>
+    <button class="btn btn-sm btn-close" onclick="toggleEnquiryForm()"></button>
+  </div>
+  <form method="POST" action="/enquiry">
+    <input type="text" name="name" placeholder="Your Name" class="form-control mb-2" required />
+    <input type="email" name="email" placeholder="Your Email" class="form-control mb-2" required />
+    <textarea name="message" rows="3" placeholder="Your Message" class="form-control mb-2" required></textarea>
+    <button type="submit" class="btn btn-danger w-100">
+      <i class="fa-solid fa-paper-plane me-1"></i> Send
+    </button>
+  </form>
+</div>
+
+<!-- 📜 Enquiry Toggle Script -->
+<script>
+  function toggleEnquiryForm() {
+    const form = document.getElementById("enquiryForm");
+    form.style.display = form.style.display === "none" ? "block" : "none";
+  }
+</script>

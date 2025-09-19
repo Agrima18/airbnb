@@ -1,0 +1,46 @@
+<% layout("/layout/boilerplate") -%>
+
+<div class="container mt-4">
+  <h2 class="mb-3 text-center text-crimson">💖 Your Wishlist</h2>
+
+  <div class="d-flex justify-content-center mb-3">
+    <form method="GET" action="/wishlist">
+      <div class="form-check form-switch">
+        <input 
+          class="form-check-input" 
+          type="checkbox" 
+          id="taxToggle" 
+          name="tax" 
+          value="on"
+          onchange="this.form.submit()" 
+          <%= tax === 'on' ? 'checked' : '' %>>
+        <label class="form-check-label ms-2" for="taxToggle">Include Tax (18%)</label>
+      </div>
+    </form>
+  </div>
+
+  <% if (listings.length === 0) { %>
+    <p class="text-muted text-center">Your wishlist is empty. Start exploring to add listings!</p>
+  <% } else { %>
+    <% const includeTax = tax === 'on'; %>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <% listings.forEach(listing => { %>
+        <div class="col">
+          <div class="card h-100 shadow">
+            <img src="<%= listing.image %>" class="card-img-top" alt="<%= listing.title %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= listing.title %></h5>
+              <p class="card-text"><%= listing.description.substring(0, 100) %>...</p>
+              <p class="text-muted mb-1"><i class="fa-solid fa-location-dot text-crimson"></i> <%= listing.location %></p>
+              <p class="fw-bold">
+                ₹<%= includeTax ? (listing.price * 1.18).toFixed(0) : listing.price %>
+                <small class="text-muted">/night</small>
+              </p>
+              <a href="/listings/<%= listing._id %>" class="btn btn-outline-crimson">View</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

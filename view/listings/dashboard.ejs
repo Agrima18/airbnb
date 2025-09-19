@@ -1,0 +1,84 @@
+<% layout("/layout/boilerplate") -%>
+
+<div class="container py-5">
+  <h2 class="mb-4">🛎️ Host Dashboard</h2>
+
+  <!-- 👤 Host Info -->
+  <div class="mb-5">
+    <h5>Welcome, <%= user.username %>!</h5>
+    <p class="text-muted">You are managing <strong><%= listings.length %></strong> listing(s).</p>
+    <a href="/host/listings/new" class="btn btn-success btn-sm">+ Create New Listing</a>
+  </div>
+
+  <!-- 🏠 Host Listings -->
+  <div class="mb-5">
+    <h4 class="mb-3">📦 Your Listings</h4>
+    <% if (listings.length > 0) { %>
+      <div class="row g-4">
+        <% listings.forEach(listing => { %>
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+              <img src="<%= listing.image %>" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='/images/placeholder.jpg'" />
+              <div class="card-body">
+                <h5 class="card-title"><%= listing.title %></h5>
+                <p class="card-text text-muted">₹<%= listing.taxIncluded ? (listing.price * 1.18).toFixed(2) : listing.price %> | <%= listing.category %></p>
+                <p class="small text-muted">Location: <%= listing.location %></p>
+
+                <div class="d-flex justify-content-between mt-3">
+                  <a href="/listings/<%= listing.slug %>" class="btn btn-outline-primary btn-sm">View</a>
+                  <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning btn-sm">Edit</a>
+                  <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" onsubmit="return confirm('Are you sure?')">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="text-muted">You have not created any listings yet.</p>
+    <% } %>
+  </div>
+
+  <!-- 📆 Bookings -->
+  <div>
+    <h4 class="mb-3">📑 Bookings Received</h4>
+    <% const yourBookings = bookings.filter(b => b.listing && b.listing.host && b.listing.host.toString() === user._id.toString()); %>
+
+    <% if (yourBookings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Listing</th>
+              <th>Guest</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Guests</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% yourBookings.forEach(booking => { %>
+              <tr>
+                <td><%= booking.listing.title %></td>
+                <td><%= booking.user.username %></td>
+                <td><%= new Date(booking.startDate).toLocaleDateString() %></td>
+                <td><%= new Date(booking.endDate).toLocaleDateString() %></td>
+                <td><%= booking.guests %></td>
+                <td>
+                  <span class="badge <%= booking.isPaid ? 'bg-success' : 'bg-secondary' %>">
+                    <%= booking.isPaid ? 'Paid' : 'Unpaid' %>
+                  </span>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-muted">No bookings yet.</p>
+    <% } %>
+  </div>
+</div>

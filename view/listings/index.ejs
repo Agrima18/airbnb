@@ -1,0 +1,245 @@
+<% layout("/layout/boilerplate") -%>
+<style>
+  .card-img-top {
+    transition: opacity 0.3s ease;
+  }
+
+  .card:hover .card-img-top {
+    opacity: 0.65;
+  }
+
+  .card {
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+</style>
+<div class="container mt-5" style="max-width: 1450px;">
+
+  <!-- Flash Messages -->
+  <% if (success) { %>
+    <div class="alert alert-success text-center"><%= success %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger text-center"><%= error %></div>
+  <% } %>
+
+  <!-- Reserved Filter & Search Container -->
+  <div id="filterSearchArea" style="min-height: 220px; padding: 2000px; background: #f8f9fa; border-radius: 8px; padding: 20px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);">
+    
+    <!-- Top Navigation -->
+     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <div class="d-flex justify-content-center gap-4 text-center mb-4">
+      <a href="/services" class="text-decoration-none text-dark">
+        <div><span style="font-size: 28px;">🔔</span><br><small>Services</small></div>
+      </a>
+      <a href="/host" class="text-decoration-none text-dark">
+        <div><span style="font-size: 28px;">🏠</span><br><small>Host</small></div>
+      </a>
+      <a href="/experiences" class="text-decoration-none text-dark">
+        <div><span style="font-size: 28px;">🪂</span><br><small>Experience</small></div>
+      </a>
+    </div>
+
+    <!-- Search Bar -->
+    <form method="GET" action="/listings" class="d-flex align-items-center border border-2 rounded-pill px-3 shadow-sm bg-white gap-3 mb-4" style="max-width: 800px; margin: auto;">
+      <!-- Destination -->
+      <div class="d-flex flex-column">
+        <label class="text-muted small mb-1">Where</label>
+        <input type="text" class="form-control border-0 p-0" name="destination" placeholder="Search destination..." style="min-width: 140px;" />
+      </div>
+      <div class="vr"></div>
+
+      <!-- Date -->
+      <div class="d-flex flex-column position-relative">
+        <label class="text-muted small mb-1">When</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-0" style="cursor: pointer;" id="calendarIcon">
+            <i class="fa-regular fa-calendar-days text-muted"></i>
+          </span>
+          <input type="text" id="datePicker" class="form-control border-0 bg-white" name="date" placeholder="Select date" style="min-width: 130px;" />
+        </div>
+      </div>
+      <div class="vr"></div>
+
+      <!-- Guests -->
+      <div class="dropdown position-relative">
+        <label class="text-muted small mb-1">Who</label>
+        <button class="form-control border-0 p-0 bg-white text-start dropdown-toggle" type="button" id="guestDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 150px;">
+          Add guests
+        </button>
+        <ul class="dropdown-menu p-3 shadow" aria-labelledby="guestDropdown" style="min-width: 250px;">
+          <% const guests = ["adults", "children", "infants", "pets"]; const guestIcons = ["users", "child", "baby", "paw"]; %>
+          <% for (let i = 0; i < guests.length; i++) { const g = guests[i]; %>
+            <li class="d-flex justify-content-between align-items-center mb-2">
+              <span><i class="fas fa-<%= guestIcons[i] %>"></i> <%= g.charAt(0).toUpperCase() + g.slice(1) %></span>
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adjustGuest('<%= g %>', -1)">−</button>
+                <span id="<%= g %>Count">0</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adjustGuest('<%= g %>', 1)">+</button>
+                <input type="hidden" name="<%= g %>" id="<%= g %>Input" value="0">
+              </div>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+
+      <!-- Search Button -->
+      <button type="submit" class="btn rounded-circle d-flex align-items-center justify-content-center ms-3" style="background-color: crimson; color: white; width: 40px; height: 45px;">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+
+    <!-- Category Filters -->
+    <div class="d-flex justify-content-between align-items-center mb-0 flex-wrap gap-3 px-3">
+      <div class="d-flex gap-4 flex-wrap px-3 py-2">
+        <% const categories = ["Trending", "Farm House", "Mountain", "Beach", "House", "OMG", "Sports", "Experience", "Pool"]; 
+           const iconMap = {
+              "Trending": "fa-fire",
+              "Farm House": "fa-tractor",
+              "Mountain": "fa-mountain",
+              "Beach": "fa-umbrella-beach",
+              "House": "fa-house",
+              "OMG": "fa-bolt",
+              "Sports": "fa-futbol",
+              "Experience": "fa-star",
+              "Pool": "fa-person-swimming"
+           };
+        %>
+        <% for (let c of categories) { %>
+          <div class="text-center">
+            <a href="/listings?category=<%= c %>" class="text-decoration-none text-dark">
+              <i class="fa-solid <%= iconMap[c] || 'fa-compass' %> fs-4"></i>
+            </a>
+            <p class="mb-0"><%= c %></p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Tax Toggle -->
+      <form method="GET" action="/listings" class="mb-0">
+        <div class="form-check form-switch d-flex align-items-center">
+          <input class="form-check-input me-2" type="checkbox" name="tax" id="taxSwitch" onchange="this.form.submit()" <%= tax === 'on' ? 'checked' : '' %> />
+          <label class="form-check-label" for="taxSwitch">Tax</label>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Listings Grid (starts after reserved filter/search area) -->
+  <% if (!listings || listings.length === 0) { %>
+    <div class="alert alert-info text-center my-5">
+      No listings found. Try a different search or filter.
+    </div>
+  <% } else { %>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+      <% for (let listing of listings) { %>
+        <div class="col">
+          <a href="/listings/<%= listing.slug %>" class="text-decoration-none text-dark">
+            <div class="card h-100 shadow-sm position-relative">
+  <!-- Wishlist Button Overlay -->
+  <% if (currentUser) {
+       const inWishlist = currentUser.wishlist.some(w => w._id.toString() === listing._id.toString()); %>
+    <form method="POST" action="/wishlist/<%= listing._id %>" class="position-absolute top-0 end-0 m-2 z-1">
+      <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm">
+        <i class="<%= inWishlist ? 'fa-solid' : 'fa-regular' %> fa-heart text-danger"></i>
+      </button>
+    </form>
+  <% } else { %>
+    <a href="/login" class="position-absolute top-0 end-0 m-2 z-1 btn btn-light btn-sm rounded-circle shadow-sm">
+      <i class="fa-regular fa-heart text-danger"></i>
+    </a>
+  <% } %>
+
+  <!-- Listing Image -->
+  <img src="<%= listing.image %>" alt="<%= listing.title %>" class="card-img-top" style="height: 15rem; object-fit: cover;" />
+
+  <!-- Card Body -->
+  <div class="card-body d-flex flex-column">
+    <h5 class="card-title"><%= listing.title %></h5>
+    <p class="card-text mb-1">₹<%= tax === 'on' ? (listing.price * 1.18).toFixed(2) : listing.price.toFixed(2) %> / night</p>
+    <p class="text-muted mb-2">📍 <%= listing.country || 'Unknown' %></p>
+    <div row-2>
+    <a href="/listings/<%= listing.slug %>" class="btn btn-dark mt-auto">View Details</a>
+    </div>
+  </div>
+</div>
+
+          </a>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <!-- Pagination -->
+  <nav aria-label="Page navigation" class="my-4">
+    <ul class="pagination justify-content-center">
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/listings?<%= queryStringWithoutPage %>&page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/listings?<%= queryStringWithoutPage %>&page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/listings?<%= queryStringWithoutPage %>&page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+      <% } %>
+    </ul>
+  </nav>
+
+</div>
+
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  const picker = flatpickr("#datePicker", {
+    minDate: "today",
+    dateFormat: "Y-m-d",
+  });
+  document.getElementById("calendarIcon").addEventListener("click", () => picker.open());
+</script>
+
+<!-- Guest adjustment -->
+<script>
+  const guestLimits = { adults: 10, children: 10, infants: 5, pets: 5 };
+  function adjustGuest(type, change) {
+    const countEl = document.getElementById(`${type}Count`);
+    const inputEl = document.getElementById(`${type}Input`);
+    let current = parseInt(countEl.textContent);
+    const max = guestLimits[type] || 10;
+    const newValue = Math.max(0, Math.min(current + change, max));
+    countEl.textContent = newValue;
+    inputEl.value = newValue;
+    updateGuestButtonText();
+  }
+  function updateGuestButtonText() {
+    const types = ["adults", "children", "infants", "pets"];
+    let parts = [];
+    for (let type of types) {
+      const val = parseInt(document.getElementById(`${type}Input`).value);
+      if (val) parts.push(`${val} ${type.charAt(0).toUpperCase() + type.slice(1)}`);
+    }
+    document.getElementById("guestDropdown").textContent = parts.length ? parts.join(", ") : "Add guests";
+  }
+</script>
+
+<!-- Toggle Enquiry -->
+<script>
+  function toggleEnquiryForm() {
+    const form = document.getElementById('enquiryForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  }
+</script>

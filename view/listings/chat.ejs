@@ -1,0 +1,84 @@
+<% layout("layout/boilerplate") -%>
+
+<div class="container py-5">
+  <h3 class="text-center mb-4">💬 Chat for <%= listing.title %></h3>
+
+  <!-- Chat Box -->
+  <div class="card shadow-sm">
+    <div class="card-body" id="messages" style="height: 400px; overflow-y: scroll;">
+      <% messages.forEach(msg => { %>
+        <div class="mb-2">
+          <img src="<%= msg.sender.avatar || 'https://i.pravatar.cc/40?u=' + msg.sender._id %>" class="rounded-circle me-2" style="height: 30px;">
+          <strong><%= msg.sender.username %></strong>
+          <span class="text-muted small"><%= new Date(msg.timestamp).toLocaleTimeString() %></span>
+          <div><%= msg.message %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Typing Indicator -->
+  <div id="typing" class="text-muted mt-1" style="height: 20px;"></div>
+
+  <!-- Chat Form -->
+  <form id="chatForm" class="mt-3 d-flex align-items-center">
+    <input type="text" id="chatInput" class="form-control me-2" placeholder="Type a message..." autocomplete="off" required />
+    <button class="btn btn-primary">Send</button>
+  </form>
+</div>
+
+<!-- Socket.IO Client -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const room = "<%= room %>";
+  const senderId = "<%= currentUser._id %>";
+  const senderName = "<%= currentUser.username %>";
+  const senderAvatar = "<%= currentUser.avatar || 'https://i.pravatar.cc/40?u=' + currentUser._id %>";
+
+  socket.emit("joinRoom", { room });
+
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatInput");
+  const messagesDiv = document.getElementById("messages");
+  const typingDiv = document.getElementById("typing");
+
+  // Send message
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (message.length > 0) {
+      socket.emit("sendMessage", { room, message, sender: senderId, timestamp: new Date() });
+      input.value = "";
+      socket.emit("typing", { room, typing: false });
+    }
+  });
+
+  // Typing event
+  input.addEventListener("input", () => {
+    socket.emit("typing", { room, typing: input.value.length > 0, sender: senderName });
+  });
+
+  // Receive message
+  socket.on("receiveMessage", ({ message, sender, avatar, timestamp }) => {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "mb-2";
+    msgDiv.innerHTML = `
+      <img src="${avatar || 'https://i.pravatar.cc/40?u=' + sender}" class="rounded-circle me-2" style="height: 30px;">
+      <strong>${sender}</strong>
+      <span class="text-muted small">${new Date(timestamp).toLocaleTimeString()}</span>
+      <div>${message}</div>
+    `;
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+
+  // Typing indicator
+  socket.on("showTyping", ({ sender }) => {
+    typingDiv.innerText = `${sender} is typing...`;
+  });
+
+  socket.on("hideTyping", () => {
+    typingDiv.innerText = "";
+  });
+</script>

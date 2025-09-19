@@ -1,0 +1,139 @@
+.card{
+    border:none !important;
+    margin-bottom :2rem !important;
+    }
+.card-img-top{
+    width: 100%!important;
+    object-fit: cover!important;
+    border-radius: 1rem !important;
+    
+}
+.card-body{
+    padding: 0!important;
+}
+.listing-link{
+    text-decoration: none !important;
+
+}
+.card-img-overlay{
+    opacity: 0!important;
+}
+.card-img-overlay:hover{
+    opacity: 0.3!important;
+    background-color: white!important;
+}
+.show img{
+    height: 15vh;
+    width: 15vh !important;
+}
+.editbt{
+    color: white !important;
+
+}
+.stars {
+  font-size: 1.2rem;
+  display: inline-block;
+  animation: buzzing 1.5s infinite;
+}
+
+@keyframes buzzing {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-box {
+  background: #fff;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.rating-box header {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.stars i {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.stars i.active {
+  color: #ff9c1a;
+}
+
+  .rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  .star-label {
+    font-size: 2rem;
+    color: lightgray;
+    transition: color 1s;
+  }
+
+  input[type="radio"]:checked ~ label {
+    color: gold;
+  }
+
+  input[type="radio"]:hover ~ label {
+    color: rgb(41, 41, 39);
+  }
+
+  input[type="radio"]:focus ~ label {
+    color: darkgoldenrod;
+  }
+.navbar-brand{
+  color:crimson;
+  font-size: 30px;
+}
+.navurl{
+  color:crimson !important;
+  justify-content: left;
+}
+.btn-crimson {
+  background-color: crimson;
+  color: white;
+  border: none;
+}
+
+.btn-crimson:hover {
+  background-color: darkred;
+  transition: background-color 0.3s ease-in-out;
+}
+
+  .no-margins {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }

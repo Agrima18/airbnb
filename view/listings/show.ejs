@@ -1,0 +1,266 @@
+<% layout("/layout/boilerplate") -%>
+
+<!-- 🔤 Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Roboto', sans-serif; }
+  h1, h2, h3, h4, h5, .review-heading { font-family: 'Playfair Display', serif; }
+  .btn-crimson { background-color: crimson; color: white; }
+</style>
+
+<div class="container py-5" style="margin-top: 650px;">
+  <div class="row">
+    <!-- LEFT COLUMN -->
+    <div class="col-md-6">
+      <!-- Listing Info -->
+      <div class="card shadow-sm mb-4">
+        <img src="<%= listing.image %>" class="card-img-top" style="height: 300px; object-fit: cover;" alt="<%= listing.title %>" onerror="this.src='/images/placeholder.jpg'" />
+        <div class="card-body">
+          <h4 class="card-title"><%= listing.title %></h4>
+          <ul class="list-unstyled">
+            <li><strong>Price:</strong> ₹<%= listing.taxIncluded ? (listing.price * 1.18).toFixed(2) : listing.price %></li>
+            <li><strong>Tax Included:</strong> <%= listing.taxIncluded ? "Yes (18%)" : "No" %></li>
+            <li><strong>Action Type:</strong> <%= listing.actionType %></li>
+            <li><strong>Category:</strong> <%= listing.category %></li>
+            <li><strong>Location:</strong> <%= listing.location %></li>
+            <li><strong>Country:</strong> <%= listing.country %></li>
+          </ul>
+
+          <!-- Plan a Full Trip Button -->
+          <div class="mb-3">
+            <% if (currentUser) { %>
+              <a href="/listings/<%= listing.slug %>/plan-trip" class="btn btn-crimson w-100">
+                <i class="fa-solid fa-route me-2"></i> Plan a Full Trip
+              </a>
+            <% } else { %>
+              <a href="/login" class="btn btn-outline-secondary w-100">
+                Login to Plan a Trip
+              </a>
+            <% } %>
+          </div>
+
+          <div class="row g-2">
+            <!-- Wishlist -->
+            <div class="col-md-3 col-6">
+              <% if (currentUser) { 
+                   const inWishlist = currentUser.wishlist.some(w => w._id.toString() === listing._id.toString()); %>
+                <form method="POST" action="/wishlist/<%= listing._id %>">
+                  <button type="submit" class="btn w-100" style="background-color: black; color: crimson;">
+                    <i class="<%= inWishlist ? 'fa-solid' : 'fa-regular' %> fa-heart"></i>
+                    <%= inWishlist ? 'Remove' : 'Add' %>
+                  </button>
+                </form>
+              <% } else { %>
+                <a href="/login" class="btn btn-outline-secondary w-100">
+                  <i class="fa-regular fa-heart"></i> Wishlist
+                </a>
+              <% } %>
+            </div>
+
+            <!-- Back -->
+            <div class="col-md-3 col-6">
+              <a href="/listings" class="btn btn-dark w-100">
+                <i class="fa fa-arrow-left"></i> Back
+              </a>
+            </div>
+
+            <!-- Edit -->
+            <div class="col-md-3 col-6">
+              <a href="/listings/<%= listing.slug %>/edit" class="btn btn-warning w-100">
+                <i class="fa fa-edit"></i> Edit
+              </a>
+            </div>
+
+            <!-- Delete -->
+            <div class="col-md-3 col-6">
+              <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+                <button class="btn btn-outline-danger w-100" onclick="return confirm('Are you sure?');">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card shadow-sm p-4">
+        <h5 class="mb-3">Select Travel Dates</h5>
+        <input id="dateRange" type="text" class="form-control" placeholder="Start - End" />
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-md-6 d-flex flex-column gap-4">
+      <!-- Booking Form -->
+      <div class="card shadow-sm p-4">
+        <h5 class="mb-3">Book this Listing</h5>
+        <form method="POST" action="/listings/booking">
+          <input type="hidden" name="listingId" value="<%= listing._id %>">
+          <div class="mb-2"><label>Start Date</label><input type="date" name="startDate" required class="form-control"></div>
+          <div class="mb-2"><label>End Date</label><input type="date" name="endDate" required class="form-control"></div>
+          <div class="mb-2"><label>Guests</label><input type="number" name="guests" value="1" min="1" required class="form-control"></div>
+          <div class="mb-2"><label>Total Price (₹)</label><input type="number" name="totalPrice" value="<%= listing.taxIncluded ? (listing.price * 1.18).toFixed(2) : listing.price %>" class="form-control" required></div>
+          <button class="btn btn-crimson">Book Now</button>
+        </form>
+      </div>
+
+      <!-- Trip Plans Section -->
+      <div class="card mt-4 shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="card-title mb-3"><i class="fa-solid fa-route me-2"></i>Your Planned Trips</h4>
+
+          <% if (currentUser) { %>
+            <form method="POST" action="/plans" class="mb-3">
+              <div class="mb-2">
+                <label>Trip Title</label>
+                <input type="text" name="plan[title]" class="form-control" placeholder="E.g., Weekend in Goa" required>
+              </div>
+              <div class="row g-2">
+                <div class="col">
+                  <label>Start Date</label>
+                  <input type="date" name="plan[startDate]" class="form-control" required>
+                </div>
+                <div class="col">
+                  <label>End Date</label>
+                  <input type="date" name="plan[endDate]" class="form-control" required>
+                </div>
+              </div>
+              <div class="mb-2 mt-2">
+                <label>Notes</label>
+                <textarea name="plan[notes]" class="form-control" rows="2" placeholder="Optional notes"></textarea>
+              </div>
+              <input type="hidden" name="plan[listing]" value="<%= listing._id %>">
+              <button class="btn btn-crimson w-100">Add Trip Plan</button>
+            </form>
+          <% } else { %>
+            <p class="text-muted">Login to create your trip plans!</p>
+          <% } %>
+
+          <% if (plans && plans.length > 0) { %>
+            <div class="list-group">
+              <% plans.forEach(plan => { %>
+                <div class="list-group-item d-flex justify-content-between align-items-start flex-column flex-md-row">
+                  <div>
+                    <h5 class="mb-1">
+                      <i class="fa-solid fa-map-location-dot text-primary me-1"></i>
+                      <%= plan.title %>
+                    </h5>
+                    <small class="text-muted">
+                      Dates: <%= plan.startDate ? new Date(plan.startDate).toDateString() : "N/A" %> 
+                      - <%= plan.endDate ? new Date(plan.endDate).toDateString() : "N/A" %>
+                    </small>
+                    <% if (plan.listings && plan.listings.length > 0) { %>
+                      <ul class="mt-2 mb-0">
+                        <% plan.listings.forEach(listing => { %>
+                          <li><%= listing.title || "Unknown Listing" %> (<%= listing.location %>)</li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                  <form class="mt-2 mt-md-0" method="POST" action="/plans/<%= plan._id %>?_method=DELETE">
+                    <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <p class="text-muted">No planned trips yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Chat Section -->
+      <div class="card shadow-sm p-4">
+        <h5>Chat with Host</h5>
+        <div id="messages" class="border p-2 mb-2" style="max-height: 200px; overflow-y: auto;"></div>
+        <div class="d-flex">
+          <input id="chatInput" type="text" placeholder="Type message..." class="form-control me-2" />
+          <button id="sendBtn" class="btn btn-crimson">Send</button>
+        </div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div>
+        <h5 class="mb-3">Reviews</h5>
+        <% if (listing.reviews && listing.reviews.length > 0) { %>
+          <div class="row g-4">
+            <% listing.reviews.forEach((review) => { %>
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                      <div><span class="text-warning"><% for (let i = 0; i < review.rating; i++) { %>⭐<% } %></span></div>
+                      <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
+                      </form>
+                    </div>
+                    <p><%= review.comment %></p>
+                    <small class="text-muted">By <%= review.author || "Unknown" %> on <%= new Date(review.createdAt).toDateString() %></small>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p>No reviews yet.</p>
+        <% } %>
+
+        <form action="/listings/<%= listing._id %>/reviews" method="POST" class="mt-4">
+          <div class="mb-3">
+            <label>Rating</label>
+            <div>
+              <% for (let i = 1; i <= 5; i++) { %>
+                <input type="radio" class="btn-check" id="star-<%= i %>" name="review[rating]" value="<%= i %>" required />
+                <label class="btn btn-outline-warning" for="star-<%= i %>">⭐</label>
+              <% } %>
+            </div>
+          </div>
+          <div class="mb-3"><label>Comment</label><textarea name="review[comment]" class="form-control" rows="3" required></textarea></div>
+          <button class="btn btn-crimson">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Flatpickr & Socket.IO -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  flatpickr("#dateRange", {
+    mode: "range",
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    showMonths: 2,
+    inline: true,
+    onChange: function (dates) {
+      if (dates.length === 2) {
+        document.querySelector('input[name="startDate"]').value = dates[0].toISOString().split("T")[0];
+        document.querySelector('input[name="endDate"]').value = dates[1].toISOString().split("T")[0];
+      }
+    }
+  });
+
+  const socket = io();
+  const room = "<%= listing._id %>-<%= currentUser ? currentUser._id : '' %>";
+  const sender = "<%= currentUser ? currentUser.username : 'Guest' %>";
+
+  socket.emit("joinRoom", { room });
+
+  document.getElementById("sendBtn").onclick = () => {
+    const msg = document.getElementById("chatInput").value.trim();
+    if (msg) {
+      socket.emit("sendMessage", { room, message: msg, sender });
+      document.getElementById("chatInput").value = "";
+    }
+  };
+
+  socket.on("receiveMessage", ({ message, sender }) => {
+    const msgDiv = document.getElementById("messages");
+    const bubble = document.createElement("div");
+    bubble.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    msgDiv.appendChild(bubble);
+  });
+</script>
